@@ -61,7 +61,7 @@ class HomeScreen extends StatelessWidget {
                               Consumer<TemperatureProvider>(
                                 builder: (context,value,child) {
                                   return DropdownButton<String>(
-                                    value: value.finalSelectedValue,
+                                    value: value.selectedValue,
                                     items: list.map<DropdownMenuItem<String>>(
                                             (String value) {
                                           return DropdownMenuItem<String>(
@@ -71,7 +71,6 @@ class HomeScreen extends StatelessWidget {
                                         }).toList(),
                                     onChanged: (values) {
                                         value.selectedValue = values!;
-                                        print(values);
                                         value.converter();
                                     },
                                   );
@@ -154,7 +153,7 @@ class HomeScreen extends StatelessWidget {
                             return Padding(
                               padding: const EdgeInsets.only(
                                   left: 25, top: 5, bottom: 5).r,
-                              child: Text(value.finalOutput),
+                              child: Text(value.output),
                             );
                           },
                         ),

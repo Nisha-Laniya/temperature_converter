@@ -9,9 +9,6 @@ class TemperatureProvider with ChangeNotifier {
   int? input;
   int tabValue = 0;
 
-  String get finalOutput => output;
-  String get finalSelectedValue => selectedValue;
-
   void converter() {
     input = int.parse(textController.text);
     if (selectedValue == 'Celsius' && tabValue == 0) {
