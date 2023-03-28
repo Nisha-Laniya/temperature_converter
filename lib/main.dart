@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
+import 'package:temperature_converter/provider/temperature_provider.dart';
 import 'package:temperature_converter/screens/home_screen.dart';
 
 void main() {
@@ -17,13 +19,16 @@ class MyApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context,child) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-            title: 'Flutter Demo',
-            theme: ThemeData(
-              primarySwatch: Colors.blue,
-            ),
-            home: HomeScreen()
+        return ChangeNotifierProvider(
+          create: (_) => TemperatureProvider(),
+          child: MaterialApp(
+            debugShowCheckedModeBanner: false,
+              title: 'Flutter Demo',
+              theme: ThemeData(
+                primarySwatch: Colors.blue,
+              ),
+              home: HomeScreen()
+          ),
         );
       },
     );

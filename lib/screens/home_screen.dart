@@ -1,49 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:temperature_converter/provider/temperature_provider.dart';
 
-class HomeScreen extends StatefulWidget {
+
+class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-List<String> list = <String>['Celsius', 'Fahrenheit', 'Kelvin'];
-
-class _HomeScreenState extends State<HomeScreen> {
-
-  String selectedValue = list.first;
-  TextEditingController textController = TextEditingController();
-  String output = '0.0';
-  int? input;
-  int tabValue = 0;
-
-  void converter() {
-    input = int.parse(textController.text);
-    if (selectedValue == 'Celsius' && tabValue == 0) {
-      output = textController.text;
-    } else if (selectedValue == 'Celsius' && tabValue == 1) {
-      output = ((input! * 9 / 5) + 32).toStringAsFixed(2);
-    } else if (selectedValue == 'Celsius' && tabValue == 2) {
-      output = (input! + 273.15).toStringAsFixed(2);
-    } else if (selectedValue == 'Fahrenheit' && tabValue == 0) {
-      output = ((input! - 32) * 5 / 9).toStringAsFixed(2);
-    } else if (selectedValue == 'Fahrenheit' && tabValue == 1) {
-      output = textController.text;
-    } else if (selectedValue == 'Fahrenheit' && tabValue == 2) {
-      output = ((input! - 32) * 5 / 9 + 273.15).toStringAsFixed(2);
-    } else if (selectedValue == 'Kelvin' && tabValue == 0) {
-      output = (input! - 273.15).toStringAsFixed(2);
-    } else if (selectedValue == 'Kelvin' && tabValue == 1) {
-      output = ((input! - 273.15) * 9 / 5 + 32).toStringAsFixed(2);
-    } else if (selectedValue == "Kelvin" && tabValue == 2) {
-      output = textController.text;
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
+    print('build');
+    final temperatureProvider = Provider.of<TemperatureProvider>(context,listen: false);
     return Scaffold(
       backgroundColor: Colors.white.withOpacity(0.9),
       body: DefaultTabController(
@@ -81,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             decoration:
                                 InputDecoration(hintText: 'Enter Temperature'),
                             keyboardType: TextInputType.number,
-                            controller: textController,
+                            controller: temperatureProvider.textController,
                           ),
                           Row(
                             children: [
@@ -91,20 +58,23 @@ class _HomeScreenState extends State<HomeScreen> {
                                     fontWeight: FontWeight.w500, fontSize: 16.sp),
                               ),
                               Spacer(),
-                              DropdownButton<String>(
-                                value: selectedValue,
-                                items: list.map<DropdownMenuItem<String>>(
-                                    (String value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Text(value),
+                              Consumer<TemperatureProvider>(
+                                builder: (context,value,child) {
+                                  return DropdownButton<String>(
+                                    value: value.finalSelectedValue,
+                                    items: list.map<DropdownMenuItem<String>>(
+                                            (String value) {
+                                          return DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Text(value),
+                                          );
+                                        }).toList(),
+                                    onChanged: (values) {
+                                        value.selectedValue = values!;
+                                        print(values);
+                                        value.converter();
+                                    },
                                   );
-                                }).toList(),
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedValue = value!;
-                                    converter();
-                                  });
                                 },
                               ),
                             ],
@@ -171,20 +141,22 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ],
                                 onTap: (value) {
-                                  setState(() {
-                                    tabValue = value;
+                                    temperatureProvider.tabValue = value;
                                     print(value);
-                                    converter();
-                                  });
+                                    temperatureProvider.converter();
                                 },
                               ),
                             ),
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 25, top: 5, bottom: 5).r,
-                          child: Text('$output'),
+                        Consumer<TemperatureProvider>(
+                          builder: (context,value,child) {
+                            return Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 25, top: 5, bottom: 5).r,
+                              child: Text(value.finalOutput),
+                            );
+                          },
                         ),
                       ],
                     ),
